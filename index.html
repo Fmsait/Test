@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dados dos Sensores</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .container {
+      width: 80%;
+      margin: 0 auto;
+      max-width: 800px;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .data {
+      margin: 20px 0;
+    }
+    .data p {
+      font-size: 18px;
+      color: #555;
+    }
+    .data span {
+      font-weight: bold;
+    }
+  </style>
+  <script>
+    const ESP32_IP = 'http://192.168.181.24'; // Substitua <IP_DO_ESP32> pelo IP do seu ESP32
+
+    function fetchData() {
+      fetch(`${ESP32_IP}/data`)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('soilMoisture').textContent = data.soilMoisture;
+          document.getElementById('mq9').textContent = data.mq9;
+          document.getElementById('ldr').textContent = data.ldr;
+          document.getElementById('mq135').textContent = data.mq135;
+          document.getElementById('humidity').textContent = data.humidity;
+          document.getElementById('pressure').textContent = data.pressure !== null ? data.pressure : 'Não disponível';
+        })
+        .catch(error => {
+          console.error('Erro ao buscar dados:', error);
+          document.getElementById('error').textContent = 'Erro ao buscar dados do servidor.';
+        });
+    }
+
+    window.onload = function() {
+      fetchData();
+      setInterval(fetchData, 5000); // Atualiza os dados a cada 5 segundos
+    };
+  </script>
+</head>
+<body>
+  <h1>Dados dos Sensores</h1>
+  <div class="container">
+    <div class="data">
+      <p>Umidade do Solo: <span id="soilMoisture">...</span></p>
+      <p>MQ-9: <span id="mq9">...</span></p>
+      <p>LDR: <span id="ldr">...</span></p>
+      <p>MQ-135: <span id="mq135">...</span></p>
+      <p>Umidade: <span id="humidity">...</span></p>
+      <p>Pressão: <span id="pressure">...</span></p>
+    </div>
+    <p id="error" style="color: red;"></p>
+  </div>
+</body>
+</html>
